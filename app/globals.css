@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+*:focus {
+  outline: none !important;
+}
+
+@layer components {
+  /* for sidebars navigation buttons */
+  .sidebar-nav-button {
+    @apply flex gap-3 items-center hover:bg-white hover:scale-[0.99] transition-all duration-200 ease-in-out h-13 rounded-xl w-full pl-2 cursor-pointer active:scale-[0.97] border-2 border-gray-300 my-2;
+  }
+  /* for sidebaras collapse button */
+  .sidebar-collapse {
+    @apply w-12 h-12 flex items-center justify-center border rounded-xl text-gray-400 hover:bg-gray-50 cursor-pointer transition-all duration-200 ease-in-out hover:scale-105 active:scale-90;
+  }
+  /* for sidebars more button */
+  .sidebar-more {
+    @apply scale-110 hover:bg-white rounded-[5px] cursor-pointer transition-all duration-500 ease-in-out hover:scale-[1.170] active:scale-100;
+  }
+  /* for main-bars header buttons common css*/
+  .mainbar-actn-cmn {
+    @apply flex items-center gap-2 px-4 py-2 pb-2.5 rounded-xl text-base font-semibold transition-all;
+  }
+  /* for import and export button */
+  .mainbar-actn-uncmn {
+    @apply bg-[#eceeee] hover:bg-white border border-gray-300 duration-500 ease-in-out;
+  }
+  /* for tables header section buttons*/
+  .table-btn {
+    @apply px-4 max-[540px]:px-2 py-2 text-black hover:bg-gray-50 rounded-lg text-base font-semibold border hover:border-gray-100 shadow-xs border-gray-200 active:scale-95 transition-all duration-200 ease-in-out cursor-pointer;
+  }
+  /* for table rows checkbox */
+  .table-row-chk {
+    @apply appearance-none w-7 h-7 rounded-full border border-gray-400 checked:border-black checked:bg-black checked:font-bold checked:border-2 cursor-pointer relative after:content-['✓'] after:hidden checked:after:block after:text-white after:text-lg after:absolute after:left-[3.5px] after:-top-0.75 transition-all duration-200 ease-in-out;
+  }
+  /* for table rows status */
+  .table-row-sts {
+    @apply inline-flex items-center justify-center gap-1.5 px-1 py-2 rounded-2xl text-lg font-bold cursor-default w-38;
+  }
+  /* for table rows invoice button */
+  .table-row-inv-btn {
+    @apply p-2 w-11 h-11 bg-[#ebf1f183] rounded-full hover:bg-[#d1d4d448] shadow-lg border border-gray-200 cursor-pointer active:scale-[0.96] transition-all duration-100 ease-in-out;
+  }
+  /* for table rows 3-dot button */
+  .table-row-3dt-btn {
+    @apply p-4 w-[20%] text-right text-gray-500 hover:text-black font-bold text-xl cursor-pointer  transition-all duration-100 ease-in-out;
+  }
+  /* for table footers buttons */
+  .table-ftr-btn {
+    @apply w-10 h-10 hover:bg-gray-50 text-gray-500 rounded-lg text-base font-bold border border-gray-200 active:scale-95;
+  }
+
+  
+  /* for making the scroll bar thin */
+  .thin-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 3px;
+  }
+  .thin-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+  .thin-scrollbar::-webkit-scrollbar-thumb {
+    background: #a5a4a448;
+    border-radius: 10px;
+  }
+  .thin-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #83838370;
+  }
+
+   /* No scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* No scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+}
+
+/* Sorry! I had to do this because of a mistake I made 😓. */
+html {
+  font-size: 80% !important;
+}
