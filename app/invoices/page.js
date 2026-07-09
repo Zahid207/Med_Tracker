@@ -2,8 +2,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import Invoice from "@/components/modals/Invoice";
 import SigninFirst from "@/components/states/SigninFirst";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { useSession } from "next-auth/react";
+import Swal from "sweetalert2";
 
 const invoice = () => {
   // ----------------------------------- For invoice pop up -----------------------------------
@@ -265,6 +266,46 @@ const invoice = () => {
   const fullFormatter = new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 2,
   });
+
+  // ------------------------- to delete invoice ---------------------------
+  const handleDeleteInvoice = async (invoiceId) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444", 
+      cancelButtonColor: "#64748b", 
+      confirmButtonText: "Yes, delete it!",
+      background: "#ffffff",
+      customClass: {
+        popup: "rounded-2xl", 
+      },
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const res = await fetch("/api/invoice", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ invoiceId }),
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          toast.success("Invoice deleted successfully!");
+          setItems((prevItems) =>
+            prevItems.filter((inv) => inv._id !== invoiceId),
+          );
+        } else {
+          toast.error(result.message || "Failed to delete invoice!");
+        }
+      } catch (error) {
+        toast.error("Something went wrong while deleting!");
+      }
+    }
+  };
 
   if (status === "loading") {
     return (
@@ -667,9 +708,10 @@ const invoice = () => {
 
                                         <button
                                           type="button"
-                                          onClick={() =>
-                                            setOpenPopupIndex(null)
-                                          }
+                                          onClick={() => {
+                                            setOpenPopupIndex(null);
+                                            handleDeleteInvoice(rowId);
+                                          }}
                                           className="w-full text-left px-2.5 py-1.5 rounded-lg text-base font-bold text-red-500 hover:bg-red-50 transition-colors cursor-pointer flex items-center gap-1.5"
                                         >
                                           <img

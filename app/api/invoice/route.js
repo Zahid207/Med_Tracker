@@ -61,20 +61,20 @@ export async function PUT(request) {
     const collection = db.collection("invoices");
 
     // ---------------------------------------------------------
-    // CASE 1: FULL INVOICE EDIT 
+    // CASE 1: FULL INVOICE EDIT
     // ---------------------------------------------------------
     if (body._id) {
       const { _id, ...updateData } = body;
 
       const result = await collection.updateOne(
         { _id: new ObjectId(_id) },
-        { $set: updateData } 
+        { $set: updateData },
       );
 
       if (result.matchedCount === 0) {
         return NextResponse.json(
           { success: false, message: "No invoice found with this ID" },
-          { status: 404 }
+          { status: 404 },
         );
       }
 
@@ -82,10 +82,10 @@ export async function PUT(request) {
         success: true,
         message: "Invoice updated successfully",
       });
-    } 
-    
+    }
+
     // ---------------------------------------------------------
-    // CASE 2: PAYMENT RECORD 
+    // CASE 2: PAYMENT RECORD
     // ---------------------------------------------------------
     else if (body.invoiceId) {
       const {
@@ -98,7 +98,7 @@ export async function PUT(request) {
       if (!invoiceId) {
         return NextResponse.json(
           { success: false, message: "Invoice ID is missing" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -111,13 +111,13 @@ export async function PUT(request) {
             invoice_payment_methode: invoice_payment_methode,
             status: "paid",
           },
-        }
+        },
       );
 
       if (result.matchedCount === 0) {
         return NextResponse.json(
           { success: false, message: "No invoice found with this ID" },
-          { status: 404 }
+          { status: 404 },
         );
       }
 
@@ -125,17 +125,54 @@ export async function PUT(request) {
         success: true,
         message: "Payment recorded successfully",
       });
-    } 
-    
+    }
+
     // ---------------------------------------------------------
-    // CASE 3: INVALID REQUEST 
+    // CASE 3: INVALID REQUEST
     // ---------------------------------------------------------
     else {
       return NextResponse.json(
         { success: false, message: "Invalid request: No valid ID provided" },
+        { status: 400 },
+      );
+    }
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, message: error.message },
+      { status: 500 },
+    );
+  }
+}
+
+export async function DELETE(request) {
+  try {
+    const body = await request.json();
+    const { invoiceId } = body;
+
+    if (!invoiceId) {
+      return NextResponse.json(
+        { success: false, message: "Invoice ID is missing" },
         { status: 400 }
       );
     }
+
+    const client = await clientPromise;
+    const db = client.db("MedTracker");
+    const collection = db.collection("invoices");
+
+    const result = await collection.deleteOne({ _id: new ObjectId(invoiceId) });
+
+    if (result.deletedCount === 0) {
+      return NextResponse.json(
+        { success: false, message: "No invoice found with this ID" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "Invoice deleted successfully",
+    });
   } catch (error) {
     return NextResponse.json(
       { success: false, message: error.message },
