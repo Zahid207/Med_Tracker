@@ -7,12 +7,33 @@ import { ToastContainer } from "react-toastify";
 import { useSession } from "next-auth/react";
 
 export default function ClientList() {
-  // For add client pop up
-  const [isOpenAdd, setIsOpenAdd] = useState(false);
-  // For action button pop up
-  const [isOpenAct, setIsOpenAct] = useState(false);
+  // -------------------------------- For add client pop up --------------------------------
+  // parent state for client pop up
+  const [isClientOpen, setIsClientOpen] = useState(false);
+  const [clientMode, setClientMode] = useState("create");
   const [selectedClient, setSelectedClient] = useState(null);
-  // For new invoice pop up
+  // add mew client function
+  const handleOpenAddClient = () => {
+    setClientMode("create");
+    setSelectedClient(null);
+    setIsClientOpen(true);
+  };
+  // edit client function
+  const handleOpenEditClient = (clientData) => {
+    setClientMode("edit");
+    setSelectedClient(clientData);
+    setIsClientOpen(true);
+  };
+  // close handeler
+  const handleCloseClient = () => {
+    setIsClientOpen(false);
+  };
+
+  // ------------------------------- For action button pop up -----------------------------
+  const [isOpenAct, setIsOpenAct] = useState(false);
+  const [showClient, setShowClient] = useState(null);
+
+  // ------------------------------- For new invoice pop up -------------------------------
   const [IsOpenInv, setIsOpenInv] = useState(false);
 
   // ------------------- State for fulter button and search bar toggle -------------------
@@ -22,7 +43,7 @@ export default function ClientList() {
     setSearchQuery(typingQuery);
   };
 
-  // ---------- collecting all the data from the database ----------
+  // ---------------------- collecting all the data from the database ---------------------
   const { data: session, status } = useSession();
   const userId = session?.user?.id;
   const [items, setItems] = useState([]);
@@ -115,7 +136,7 @@ export default function ClientList() {
       return matchesSearch;
     });
 
-  // ---------- Number formatter ----------
+  // ---------------------------------- Number formatter ----------------------------------
   const compactFormatter = new Intl.NumberFormat("en-US", {
     notation: "compact",
     compactDisplay: "short",
@@ -159,7 +180,7 @@ export default function ClientList() {
 
           {/* + Add Client Button */}
           <button
-            onClick={() => setIsOpenAdd(true)}
+            onClick={() => handleOpenAddClient()}
             className="flex items-center gap-2 px-6 py-2.5 bg-blue-500 text-white hover:bg-blue-600 rounded-2xl font-bold text-base shadow-md  active:scale-[0.98] transition-all"
           >
             <span>
@@ -359,7 +380,7 @@ export default function ClientList() {
                             <td
                               onClick={() => {
                                 setIsOpenAct(true);
-                                setSelectedClient(client);
+                                setShowClient(client);
                               }}
                               className="p-4 text-center text-gray-400 font-black hover:text-gray-900 text-xl cursor-pointer w-[10%]"
                             >
@@ -408,9 +429,7 @@ export default function ClientList() {
                     {/* Avatar */}
                     <div className="w-14 h-14 rounded-full bg-purple-100 overflow-hidden shrink-0">
                       <img
-                        src={
-                          selectedClient.client_photo || "/anonymous-client.png"
-                        }
+                        src={showClient.client_photo || "/anonymous-client.png"}
                         alt="avatar"
                         className="w-full h-full object-cover"
                         onError={(e) => {
@@ -421,18 +440,17 @@ export default function ClientList() {
                     {/* Name & Title */}
                     <div>
                       <h2 className="text-xl font-black text-gray-900 leading-tight">
-                        {selectedClient.client_name || "Unknown Client"}
+                        {showClient.client_name || "Unknown Client"}
                       </h2>
 
                       <p
                         className={`text-xs font-bold uppercase tracking-wider mt-1 ${
-                          selectedClient.client_status?.toLowerCase() ===
-                          "active"
+                          showClient.client_status?.toLowerCase() === "active"
                             ? "text-green-600"
                             : "text-gray-400"
                         }`}
                       >
-                        {selectedClient.client_status || "Inactive"} Client
+                        {showClient.client_status || "Inactive"} Client
                       </p>
                     </div>
                   </div>
@@ -442,19 +460,19 @@ export default function ClientList() {
                     <div className="text-base">
                       <span className="text-gray-400 font-bold">Email : </span>
                       <span className="font-semibold text-gray-900">
-                        {selectedClient.client_email || "N/A"}
+                        {showClient.client_email || "N/A"}
                       </span>
                     </div>
                     <div className="text-base">
                       <span className="text-gray-400 font-bold">Phone : </span>
                       <span className="font-semibold text-gray-900">
-                        {selectedClient.client_phone || "—"}
+                        {showClient.client_phone || "—"}
                       </span>
                     </div>
                     <div className="text-base leading-relaxed">
                       <span className="text-gray-400 font-bold">Address :</span>
                       <span className="font-semibold text-gray-900">
-                        {selectedClient.client_address || "—"}
+                        {showClient.client_address || "—"}
                       </span>
                     </div>
                   </div>
@@ -462,10 +480,22 @@ export default function ClientList() {
 
                 {/* Edit and delete Button */}
                 <div className="gap-3 flex">
-                  <button className="w-[50%] mt-6 py-3 bg-gray-300 text-black hover:bg-[#3d78fc] font-bold text-base rounded-xl active:scale-[0.99] transition-all border border-gray-200/60 cursor-pointer ">
+                  <button
+                    onClick={() => {
+                      (handleOpenEditClient(showClient), setIsOpenAct(false));
+                    }}
+                    className="w-[50%] mt-6 py-3 bg-gray-300 text-black hover:bg-[#86a7ee] font-bold text-base rounded-xl active:scale-[0.99] transition-all border border-gray-200/60 cursor-pointer "
+                  >
                     Edit Profile
                   </button>
-                  <button className="w-[50%] mt-6 py-3 bg-gray-300 text-black hover:bg-red-400 font-bold text-base rounded-xl active:scale-[0.99] transition-all border border-gray-200/60 cursor-pointer">Delete Profile</button>
+                  <button
+                    onClick={() => {
+                      setIsOpenAct(false);
+                    }}
+                    className="w-[50%] mt-6 py-3 bg-gray-300 text-black hover:bg-[#eba7a7] font-bold text-base rounded-xl active:scale-[0.99] transition-all border border-gray-200/60 cursor-pointer"
+                  >
+                    Delete Profile
+                  </button>
                 </div>
               </div>
 
@@ -478,7 +508,7 @@ export default function ClientList() {
                   </span>
                   <div className="mt-4 min-w-0 max-[487px]:scale-90  flex flex-col justify-end min-h-16">
                     <span className=" text-3xl block font-black text-gray-900 truncate">
-                      {selectedClient.invoiceCount}
+                      {showClient.invoiceCount}
                     </span>
                   </div>
                 </div>
@@ -490,7 +520,7 @@ export default function ClientList() {
                   </span>
                   <div className="mt-4 max-[487px]:scale-90 flex flex-col justify-end min-h-16">
                     <span className=" text-3xl block font-black text-gray-900 truncate">
-                      ${compactFormatter.format(selectedClient.TotalPaid)}
+                      ${compactFormatter.format(showClient.TotalPaid)}
                     </span>
                   </div>
                 </div>
@@ -502,8 +532,7 @@ export default function ClientList() {
                   </span>
                   <div className="mt-4 min-w-0 max-[487px]:scale-90  flex flex-col justify-end min-h-16">
                     <span className=" text-3xl block font-black text-red-500 truncate">
-                      $
-                      {compactFormatter.format(selectedClient.totalOutstanding)}
+                      ${compactFormatter.format(showClient.totalOutstanding)}
                     </span>
                   </div>
                 </div>
@@ -551,7 +580,7 @@ export default function ClientList() {
                 <div className="flex-1 w-full overflow-y-auto overflow-x-hidden min-h-0 pr-1 thin-scrollbar min-w-175">
                   <table className="w-full text-left table-fixed min-w-175">
                     <tbody className="divide-y divide-gray-50 text-gray-700 text-base font-medium">
-                      {selectedClient.clientInvoices.map((inv) => {
+                      {showClient.clientInvoices.map((inv) => {
                         const invAmount = (inv.invoice_items || []).reduce(
                           (sum, item) =>
                             sum +
@@ -603,7 +632,12 @@ export default function ClientList() {
           </div>
         )}
         {/* Add client pop up */}
-        <AddClient isOpen={isOpenAdd} onClose={() => setIsOpenAdd(false)} />
+        <AddClient
+          isOpen={isClientOpen}
+          onClose={handleCloseClient}
+          mode={clientMode}
+          client={selectedClient}
+        />
         {/*  New invoice pop up */}
         <Invoice
           isOpen={IsOpenInv}

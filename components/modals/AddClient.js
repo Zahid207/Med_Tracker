@@ -4,7 +4,7 @@ import { useUploadThing } from "@/utils/uploadthing";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 
-const AddClient = ({ isOpen, onClose }) => {
+const AddClient = ({ isOpen, onClose, mode = "create", client }) => {
   const { startUpload } = useUploadThing("imageUploader");
 
   // ---------------- states for all those inputs value -------------------
@@ -19,7 +19,8 @@ const AddClient = ({ isOpen, onClose }) => {
   const [clients, setclients] = useState([]);
 
   // ------------------- fetching all the clients from the database -------------------
-  useEffect(() => {
+  const fetchDatas = async () => {
+    if (!userId) return;
     fetch(`/api/client?userId=${userId}`)
       .then((res) => {
         if (!res.ok) {
@@ -27,13 +28,24 @@ const AddClient = ({ isOpen, onClose }) => {
         }
         return res.json();
       })
-      .then((data) => {
-        setclients(data);
-      })
-      .catch((err) => {
-        console.error("The actual error is:", err.message);
-      });
+      .then((data) => setclients(data))
+      .catch((err) => console.error("The actual error is:", err.message));
+  };
+  useEffect(() => {
+    fetchDatas();
   }, [userId]);
+
+  // ------------------- Populate data if in Edit Mode -------------------
+  useEffect(() => {
+    if (mode === "edit" && client) {
+      setClientNm(client.client_name || "");
+      setClientEml(client.client_email || "");
+      setClientPhn(client.client_phone || "");
+      setClientAdrs(client.client_address || "");
+      setClientStatus(client.client_status || "");
+      setClientImg(client.client_photo || null);
+    }
+  }, [mode, client]);
 
   // ------------------- function to reset inputs -------------------
   const handleResetAll = () => {
@@ -45,15 +57,26 @@ const AddClient = ({ isOpen, onClose }) => {
     setClientImg(null);
   };
 
-  // ------------------- function to add client in database -------------------
-  const addNewClient = async (Img) => {
+  // ------------------- Handle Close & Reset -------------------
+  const handleClose = () => {
+    if (mode === "edit") {
+      handleResetAll();
+    }
+    onClose();
+  };
+
+  // ------------------- function to add/update client in database -------------------
+  const saveClientToDB = async (Img) => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
+    const isEditMode = mode === "edit";
+
     const raw = JSON.stringify({
+      ...(isEditMode && { _id: client._id }),
       user_id: userId,
       client_name: ClientNm,
-      client_email: ClientEml,
+      client_email: ClientEml.toLocaleLowerCase(),
       client_phone: ClientPhn,
       client_address: ClientAdrs,
       client_status: ClientStatus,
@@ -61,19 +84,21 @@ const AddClient = ({ isOpen, onClose }) => {
     });
 
     const requestOptions = {
-      method: "POST",
+      method: isEditMode ? "PUT" : "POST",
       headers: myHeaders,
       body: raw,
       redirect: "follow",
     };
 
-    const savePaymentPromise = new Promise(async (resolve, reject) => {
+    const saveClientPromise = new Promise(async (resolve, reject) => {
       try {
         const r = await fetch("/api/client", requestOptions);
         const result = await r.json();
 
         if (result.success) {
           resolve(result);
+          handleResetAll();
+          fetchDatas();
         } else {
           reject(result);
         }
@@ -82,12 +107,16 @@ const AddClient = ({ isOpen, onClose }) => {
       }
     });
 
-    return toast.promise(savePaymentPromise, {
-      pending: "Saving client information...",
-      success: "Client added successfully",
+    return toast.promise(saveClientPromise, {
+      pending: isEditMode
+        ? "Updating client information..."
+        : "Saving client information...",
+      success: isEditMode
+        ? "Client updated successfully"
+        : "Client added successfully",
       error: {
         render({ data }) {
-          return data?.message || "Failed to add client !";
+          return data?.message || "Failed to save client !";
         },
       },
     });
@@ -101,7 +130,7 @@ const AddClient = ({ isOpen, onClose }) => {
       <div className="bg-white rounded-4xl w-full max-w-200 p-8 shadow-2xl relative">
         {/* close button */}
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="absolute top-8 right-8 text-gray-400 hover:text-gray-900 text-2xl font-bold cursor-pointer"
         >
           ✕
@@ -116,18 +145,20 @@ const AddClient = ({ isOpen, onClose }) => {
           onSubmit={(e) => {
             e.preventDefault();
 
-            if (ClientNm !== "") {
+            if (ClientEml && ClientEml.trim() !== "") {
               const isExisting = clients.some(
                 (c) =>
+                  c._id !== client?._id &&
                   c.client_email?.toLowerCase() ===
-                  ClientEml.trim().toLowerCase(),
+                    ClientEml.trim().toLowerCase(),
               );
 
               if (isExisting) {
                 const existingClient = clients.find(
                   (c) =>
+                    c._id !== client?._id &&
                     c.client_email?.toLowerCase() ===
-                    ClientEml.trim().toLowerCase(),
+                      ClientEml.trim().toLowerCase(),
                 );
                 toast.error(
                   `There is an existing client with the same Email named: ${existingClient?.client_name || "Unknown"}.`,
@@ -136,7 +167,7 @@ const AddClient = ({ isOpen, onClose }) => {
               }
             }
 
-            onClose();
+            handleClose();
 
             (async () => {
               try {
@@ -157,8 +188,7 @@ const AddClient = ({ isOpen, onClose }) => {
                   }
                 }
 
-                await addNewClient(uploadedImgUrl);
-                handleResetAll();
+                await saveClientToDB(uploadedImgUrl);
               } catch (error) {
                 console.error(error);
               }
@@ -274,7 +304,7 @@ const AddClient = ({ isOpen, onClose }) => {
             type="submit"
             className="w-full mt-2 py-4 bg-gray-900 text-white rounded-xl font-bold text-base shadow-md hover:bg-gray-800 active:scale-[0.98] transition-all cursor-pointer"
           >
-            Submit Client
+            {mode === "edit" ? "Update Client" : "Submit Client"}
           </button>
         </form>
       </div>

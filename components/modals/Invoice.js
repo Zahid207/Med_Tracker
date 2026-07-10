@@ -156,7 +156,11 @@ export default function Invoice({ isOpen, onClose, mode = "create", invoice }) {
             c.client_email?.toLowerCase() === ClientEml.trim().toLowerCase(),
         );
         toast.error(
-          `Ther is an existing client with the same Email named: ${existingClient?.client_name || "Unknown"}.`,
+          `There is an existing client with the same Email named: ${existingClient?.client_name || "Unknown"}.\nChose him from the dropdown list.`,
+          {
+            unstyled: true,
+            className: "whitespace-pre-line ",
+          },
         );
         return;
       }
