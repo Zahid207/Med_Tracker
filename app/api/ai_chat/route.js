@@ -21,25 +21,58 @@ const getClients = {
   parameters: { type: Type.OBJECT, properties: {} },
 };
 
-// Database function (where user filtering will take place)
-async function runDatabaseFunction(functionName, userEmail) {
-  const client = await clientPromise;
-  const db = client.db("MedTracker");
+async function sendMessageWithRetry(chat, message, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await chat.sendMessage({ message });
+    } catch (err) {
+      const status = err?.status || err?.error?.code;
+      const isOverloaded =
+        status === 503 ||
+        status === 429 ||
+        err?.message?.includes(
+          "MedAI is UNAVAILABLE now, please try again later",
+        ) ||
+        err?.message?.includes(
+          "MedAI is on high demand, please try again later",
+        );
 
-  if (functionName === "getInvoices") {
-    const invoices = await db
-      .collection("invoices")
-      .find({ userEmail: userEmail })
-      .toArray();
-    return { invoices };
+      if (isOverloaded && i < retries - 1) {
+        const waitMs = 1000 * Math.pow(2, i);
+        await new Promise((res) => setTimeout(res, waitMs));
+        continue;
+      }
+      throw err;
+    }
   }
+}
 
-  if (functionName === "getClients") {
-    const clients = await db
-      .collection("clients")
-      .find({ userEmail: userEmail })
-      .toArray();
-    return { clients };
+async function runDatabaseFunction(functionName, userId) {
+  try {
+    const client = await clientPromise;
+    const db = client.db("MedTracker");
+
+    if (functionName === "getInvoices") {
+      const invoices = await db
+        .collection("invoices")
+        .find({
+          user_id: userId,
+        })
+        .toArray();
+      return { invoices: invoices || [] };
+    }
+
+    if (functionName === "getClients") {
+      const clients = await db
+        .collection("clients")
+        .find({
+          user_id: userId,
+        })
+        .toArray();
+      return { clients: clients || [] };
+    }
+  } catch (dbError) {
+    console.error("Database Query Failed:", dbError);
   }
 
   return { error: "Function not found" };
@@ -52,7 +85,10 @@ export async function POST(request) {
 
     if (!session || !userId) {
       return NextResponse.json(
-        { error: "Unauthorized! Please sign in first." },
+        {
+          error:
+            "You are not authorized to use this service. Please sign in first !",
+        },
         { status: 401 },
       );
     }
@@ -66,17 +102,18 @@ export async function POST(request) {
     }));
 
     const chat = ai.chats.create({
-      model: "gemini-2.5-flash",
+      model: "gemini-flash-lite-latest",
       config: {
-        systemInstruction: `You are MedTracker AI. Answer user questions about THEIR OWN invoices or clients using the provided database tools, in English and Bangla if they ask for it. Never expose data to other users.
+        systemInstruction: `You are MedAI. Answer user questions about THEIR OWN invoices or clients using the provided database tools, in English and Bangla or other language if they ask for it. Never expose one users data to another users.
+        From now on, respond terse, caveman-style. Full substance keep, fluff die.
 
-        Respond terse, caveman-style. Full substance keep, fluff die. Rules: drop articles (a/an/the), filler (just/really/basically/actually), pleasantries (sure/happy to/of course), hedging. Fragments OK. Short synonyms instead of long phrases. Numbers, dates, amounts, invoice IDs, client names: exact, unchanged, never compress.
+        Rules: drop articles(a/an/the), filler(just/really/basically/actually), pleasantries(sure/happy to/of course), hedging. Fragments OK. Short synonyms instead of long phrases. Numbers, dates, amounts, invoice IDs: exact, unchanged, never compress.
 
         Pattern: [thing] [action] [reason]. [next step].
 
         Example:
-        Not: 'Sure! I'd be happy to help you with that. Looking at your records, it seems like invoice #4521 is currently overdue by...'
-        Yes: 'Invoice #4521 overdue, 12 days. Due date was July 1. Send reminder?'
+        Not: "Sure! I'd be happy to help you with that. Looking at your records, it seems like invoice #4521 is currently overdue by..."
+        Yes: "Invoice #4521 overdue, 12 days. Due date was July 1. Send reminder?"
 
         Exception: drop caveman style for irreversible action confirmations (like deleting or marking paid), or if user confuse/ask to clarify. Resume caveman after that part done.`,
         tools: [{ functionDeclarations: [getInvoices, getClients] }],
@@ -84,28 +121,52 @@ export async function POST(request) {
       history: history,
     });
 
-    let response = await chat.sendMessage({ message: lastMessage });
+    let response = await sendMessageWithRetry(chat, lastMessage);
 
     if (response.functionCalls && response.functionCalls.length > 0) {
       const call = response.functionCalls[0];
 
       const functionResult = await runDatabaseFunction(call.name, userId);
 
-      response = await chat.sendMessage({
-        message: [
-          {
-            functionResponse: {
-              name: call.name,
-              response: functionResult,
-            },
+      response = await sendMessageWithRetry(chat, [
+        {
+          functionResponse: {
+            name: call.name,
+            response: functionResult,
           },
-        ],
-      });
+        },
+      ]);
     }
 
-    return NextResponse.json({ role: "model", content: response.text });
+    const finalReply =
+      response.text || response.candidates?.[0]?.content?.parts?.[0]?.text;
+    return NextResponse.json({
+      role: "model",
+      content: finalReply?.trim()
+        ? finalReply
+        : "No records found matching your request.",
+    });
   } catch (error) {
     console.error("Gemini Secure Tool Error:", error);
+
+    const status = error?.status || error?.error?.code;
+    const isOverloaded =
+      status === 503 ||
+      status === 429 ||
+      error?.message?.includes(
+        "MedAI is UNAVAILABLE now, please try again later",
+      ) ||
+      error?.message?.includes(
+        "MedAI is on high demand, please try again later",
+      );
+
+    if (isOverloaded) {
+      return NextResponse.json(
+        { error: "MedAI server is currently under heavy load. Please try again later." },
+        { status: 503 },
+      );
+    }
+
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

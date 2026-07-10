@@ -64,7 +64,7 @@ export default function Sidebar({ children }) {
         {/* --- SIDEBAR START --- */}
         <aside
           ref={sidebarRef}
-          className={`w-[17%] flex flex-col p-7 pr-5 ${ShowSidebar ? "absolute left-0 top-0 h-full min-w-95 bg-[#e8eeeea6] z-20 backdrop-blur-sm pl-5" : "max-[1323px]:hidden"} min-[782px]:p-2`}
+          className={`w-[17%] flex flex-col p-7 pr-5 ${ShowSidebar ? "absolute left-0 top-0 h-full min-w-95 bg-[#e8eeeea6] z-100 backdrop-blur-sm pl-5" : "max-[1323px]:hidden"} min-[782px]:p-2`}
         >
           {/*  -- BrandSection --  */}
           <div className="flex items-center py-5 px-2 ">

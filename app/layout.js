@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/layout/Sidebar";
 import SessionWraper from "@/components/providers/SessionWraper";
+import ChatBot from "@/components/modals/ChatBot";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +31,9 @@ export default function RootLayout({ children }) {
     >
       <body>
         <SessionWraper>
-          <Sidebar>{children}</Sidebar>
+          <Sidebar>
+            {children} <ChatBot />
+          </Sidebar>
         </SessionWraper>
       </body>
     </html>
