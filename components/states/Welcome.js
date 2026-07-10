@@ -5,7 +5,7 @@ export default function Wellcome() {
   return (
     <div className="min-h-full flex flex-col">
       {/* Hero */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6 py-16 text-center">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-16 text-center">
         <span className=" text-blue-600 text-base font-medium px-2 py-1 rounded-full mb-2 cursor-default">
           For Freelancers
         </span>
@@ -20,7 +20,7 @@ export default function Wellcome() {
           in one place.
         </p>
 
-        <div className="flex gap-3 mb-12">
+        <div className="flex gap-3 mb-12 ">
           <button
             onClick={() => router.push("/signin")}
             className="hover:bg-blue-600 hover:text-white bg-white text-gray-700 border border-gray-200 px-7 py-3 rounded-lg font-bold cursor-pointer transition-colors"
@@ -36,7 +36,7 @@ export default function Wellcome() {
         </div>
 
         {/* Feature Cards */}
-        <div className="grid grid-cols-3 gap-4 max-w-2xl w-full">
+        <div className="grid grid-cols-4 max-[580px]:grid-cols-2 gap-4 max-w-3xl w-full">
           <div className="bg-white border border-gray-100 rounded-xl p-4 text-left cursor-default">
             <div className="text-2xl mb-2">
               <img src="/inv.png" alt="invoice icon" />
@@ -66,6 +66,15 @@ export default function Wellcome() {
             <div className="font-semibold text-gray-950 mt-3">Dashboard</div>
             <div className="text-sm text-gray-500 leading-relaxed mt-2">
               Monthly income, top clients — all at a glance.
+            </div>
+          </div>
+          <div className="bg-white border border-gray-100 rounded-xl p-4 text-left cursor-default">
+            <div className="text-2xl">
+              <img src="/MedAI.png" alt="database icon" width="30" height="30"/>
+            </div>
+            <div className="font-semibold text-gray-950 mt-2">AI-Powered Insights</div>
+            <div className="text-sm text-gray-500 leading-relaxed mt-2">
+              Ask MedAI about your due balances, clients, or records anytime.
             </div>
           </div>
         </div>

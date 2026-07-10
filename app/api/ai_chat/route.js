@@ -104,8 +104,7 @@ export async function POST(request) {
     const chat = ai.chats.create({
       model: "gemini-flash-lite-latest",
       config: {
-        systemInstruction: `You are MedAI. Answer user questions about THEIR OWN invoices or clients using the provided database tools, in English and Bangla or other language if they ask for it. Never expose one users data to another users.
-        From now on, respond terse, caveman-style. Full substance keep, fluff die.
+        systemInstruction: `You are MedAI. Ask How can I help you today? Answer user questions about THEIR OWN invoices or clients using the provided database tools, in English and Bangla or other language if they ask for it. Never expose one users data to another users.
 
         Rules: drop articles(a/an/the), filler(just/really/basically/actually), pleasantries(sure/happy to/of course), hedging. Fragments OK. Short synonyms instead of long phrases. Numbers, dates, amounts, invoice IDs: exact, unchanged, never compress.
 

@@ -86,16 +86,21 @@ export default function ChatBot() {
   };
 
   if (status === "unauthenticated" || !userId) {
-    return
+    return;
   } else {
     return (
       <div className="fixed bottom-6 right-6 z-50 font-sans">
         {!isOpen && (
           <button
             onClick={() => setIsOpen(true)}
-            className="bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-full shadow-2xl transition-all flex items-center justify-center scale-100 hover:scale-105 min-[782px]:mb-3 min-[782px]:mr-3 "
+            className="bg-[#bae1fd5c] backdrop-blur-md border border-slate-500 p-2 pl-2.5 pb-3.5 rounded-full shadow-2xl transition-all flex items-center justify-center scale-100 hover:scale-105 min-[782px]:mb-3 min-[782px]:mr-3 "
           >
-            <MessageSquare className="h-6 w-6" />
+            <img
+              src="/MedAI.png"
+              alt="MedAI Logo"
+              width="35"
+              height="35"
+            />
           </button>
         )}
 
@@ -105,7 +110,7 @@ export default function ChatBot() {
             className="bg-white border border-slate-200 w-96 h-140 rounded-2xl shadow-2xl flex flex-col overflow-hidden min-[782px]:mb-4 min-[782px]:mr-4 animate-in "
           >
             {/* Header */}
-            <div className="bg-blue-500 p-4 text-white flex justify-between items-center">
+            <div className="bg-[#75b9ea] p-4 text-white flex justify-between items-center">
               <div>
                 <h3 className="font-bold text-lg cursor-default">MedAI</h3>
                 <p className="text-sm text-blue-100 cursor-default">
@@ -114,7 +119,7 @@ export default function ChatBot() {
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="hover:bg-blue-600 p-1 rounded-lg transition-all cursor-pointer"
+                className="hover:bg-[#3ea0e6] p-1 rounded-lg transition-all cursor-pointer"
               >
                 <X className="h-6 w-6" />
               </button>
@@ -127,7 +132,7 @@ export default function ChatBot() {
             >
               {messages.length === 0 && (
                 <div className="text-center text-slate-600 mt-10 cursor-default">
-                  👋 Hello! How can I help you today?
+                  Hello! How can I help you today?
                 </div>
               )}
               {messages.map((m, index) => (
@@ -138,7 +143,7 @@ export default function ChatBot() {
                   <div
                     className={`max-w-[80%] rounded-2xl px-4 py-2 shadow-sm ${
                       m.role === "user"
-                        ? "bg-blue-500 text-white rounded-br-none"
+                        ? "bg-[#53aff1] text-white rounded-br-none"
                         : "bg-white text-slate-800 border border-slate-200 rounded-bl-none whitespace-pre-line"
                     }`}
                   >
@@ -158,19 +163,19 @@ export default function ChatBot() {
             {/* Input form */}
             <form
               onSubmit={handleSubmit}
-              className="p-3 border-t border-slate-200 bg-white flex gap-2"
+              className="p-3 border-t border-slate-300 bg-white flex gap-2"
             >
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Type your message..."
-                className="flex-1 border border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:border-blue-500 bg-slate-50"
+                className="flex-1 border border-sky-200 rounded-xl px-4 py-2 focus:outline-none focus:border-[#75b9ea] bg-slate-50"
                 disabled={loading}
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-blue-500 hover:bg-blue-600 text-white p-2 pr-3 rounded-xl transition-all flex items-center justify-center disabled:opacity-50 shrink-0 cursor-pointer"
+                className="bg-[#75b9ea] hover:bg-[#3ea0e6] text-white p-2 pr-3 rounded-xl transition-all flex items-center justify-center disabled:opacity-50 shrink-0 cursor-pointer"
               >
                 <Send className="h-4 w-6 scale-125" />
               </button>

@@ -70,7 +70,7 @@ export default function Sidebar({ children }) {
           <div className="flex items-center py-5 px-2 ">
             <div className="flex-1 flex items-center gap-3 cursor-default">
               {/* Logo Icon */}
-              <div className="bg-blue-600 w-10 h-10 rounded-xl flex items-center justify-center ">
+              <div className="bg-blue-600/90 w-10 h-10 rounded-xl flex items-center justify-center ">
                 <span className="text-white font-bold text-xl">M</span>
               </div>
               <span className="font-bold text-xl text-gray-800">
