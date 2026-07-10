@@ -3,8 +3,9 @@ import React, { useState, useEffect } from "react";
 import AddClient from "@/components/modals/AddClient";
 import Invoice from "@/components/modals/Invoice";
 import SigninFirst from "@/components/states/SigninFirst";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { useSession } from "next-auth/react";
+import Swal from "sweetalert2";
 
 export default function ClientList() {
   // -------------------------------- For add client pop up --------------------------------
@@ -142,6 +143,46 @@ export default function ClientList() {
     compactDisplay: "short",
     maximumFractionDigits: 2,
   });
+
+  // ---------------------------------- to delete client ----------------------------------
+  const handleDeleteClient = async (clientId) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#64748b",
+      confirmButtonText: "Yes, delete it!",
+      background: "#ffffff",
+      customClass: {
+        popup: "rounded-2xl",
+      },
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const res = await fetch("/api/client", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ clientId }),
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          toast.success("Client deleted successfully!");
+          setclients((prevClients) =>
+            prevClients.filter((clnt) => clnt._id !== clientId),
+          );
+        } else {
+          toast.error(result.message || "Failed to delete Client!");
+        }
+      } catch (error) {
+        toast.error("Something went wrong while deleting!");
+      }
+    }
+  };
 
   if (status === "loading") {
     return (
@@ -490,6 +531,7 @@ export default function ClientList() {
                   </button>
                   <button
                     onClick={() => {
+                      handleDeleteClient(showClient._id);
                       setIsOpenAct(false);
                     }}
                     className="w-[50%] mt-6 py-3 bg-gray-300 text-black hover:bg-[#eba7a7] font-bold text-base rounded-xl active:scale-[0.99] transition-all border border-gray-200/60 cursor-pointer"

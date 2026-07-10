@@ -131,3 +131,40 @@ export async function PUT(request) {
     );
   }
 }
+
+export async function DELETE(request) {
+  try {
+    const body = await request.json();
+    const { clientId } = body;
+
+    if (!clientId) {
+      return NextResponse.json(
+        { success: false, message: "Client ID is missing" },
+        { status: 400 }
+      );
+    }
+
+    const client = await clientPromise;
+    const db = client.db("MedTracker");
+    const collection = db.collection("clients");
+
+    const result = await collection.deleteOne({ _id: new ObjectId(clientId) });
+
+    if (result.deletedCount === 0) {
+      return NextResponse.json(
+        { success: false, message: "No client found with this ID" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "Client deleted successfully",
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, message: error.message },
+      { status: 500 }
+    );
+  }
+}

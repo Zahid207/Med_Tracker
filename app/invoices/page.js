@@ -467,25 +467,25 @@ const invoice = () => {
             <div className="flex gap-2">
               <button
                 onClick={() => setIsPreviewFilterd("all")}
-                className={`table-btn ${isPreviewFilterd === "all" ? "bg-gray-500 text-white" : ""}`}
+                className={`table-btn ${isPreviewFilterd === "all" ? "bg-blue-500 text-white" : ""}`}
               >
                 All
               </button>
               <button
                 onClick={() => setIsPreviewFilterd("paid")}
-                className={`table-btn ${isPreviewFilterd === "paid" ? "bg-gray-500 text-white" : ""}`}
+                className={`table-btn ${isPreviewFilterd === "paid" ? "bg-blue-500 text-white" : ""}`}
               >
                 Paid
               </button>
               <button
                 onClick={() => setIsPreviewFilterd("in transit")}
-                className={`table-btn whitespace-nowrap ${isPreviewFilterd === "in transit" ? "bg-gray-500 text-white" : ""}`}
+                className={`table-btn whitespace-nowrap ${isPreviewFilterd === "in transit" ? "bg-blue-500 text-white" : ""}`}
               >
                 In Transit
               </button>
               <button
                 onClick={() => setIsPreviewFilterd("overdue")}
-                className={`table-btn ${isPreviewFilterd === "overdue" ? "bg-gray-500 text-white" : ""} mr-4`}
+                className={`table-btn ${isPreviewFilterd === "overdue" ? "bg-blue-500 text-white" : ""} mr-4`}
               >
                 Overdue
               </button>
