@@ -134,3 +134,11 @@ medtracker/
 **Your Name**
 - GitHub: [@Zahid207](https://github.com/Zahid207)
 - LinkedIn: [Zahidul Islam sajib](https://www.linkedin.com/in/zahidul-islam-sajib/)
+
+
+  ---
+
+<p align="center">
+  <sub>Made with a lot of ❤️ Love and Care 😊 by <strong>Zahidul</strong></sub>
+</p>
+
