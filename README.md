@@ -6,7 +6,7 @@ A full-stack invoice management app built for freelancers. Create professional i
 
 ## Live Demo
 
-[med-tracker-mocha.vercel.app)](http://med-tracker-mocha.vercel.app/) 
+[med-tracker-mocha.vercel.app](http://med-tracker-mocha.vercel.app/) 
 
 ---
 
