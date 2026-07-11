@@ -131,7 +131,7 @@ medtracker/
 
 ## Author
 
-**Your Name**
+**Zahidul Islam Sajib**
 - GitHub: [@Zahid207](https://github.com/Zahid207)
 - LinkedIn: [Zahidul Islam sajib](https://www.linkedin.com/in/zahidul-islam-sajib/)
 
