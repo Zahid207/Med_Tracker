@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import AddClient from "@/components/modals/AddClient";
+import Client from "@/components/modals/Client";
 import Invoice from "@/components/modals/Invoice";
 import SigninFirst from "@/components/states/SigninFirst";
 import { toast, ToastContainer } from "react-toastify";
@@ -674,7 +674,7 @@ export default function ClientList() {
           </div>
         )}
         {/* Add client pop up */}
-        <AddClient
+        <Client
           isOpen={isClientOpen}
           onClose={handleCloseClient}
           mode={clientMode}

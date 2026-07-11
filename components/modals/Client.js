@@ -4,7 +4,7 @@ import { useUploadThing } from "@/utils/uploadthing";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 
-const AddClient = ({ isOpen, onClose, mode = "create", client }) => {
+const Client = ({ isOpen, onClose, mode = "create", client }) => {
   const { startUpload } = useUploadThing("imageUploader");
 
   // ---------------- states for all those inputs value -------------------
@@ -312,4 +312,4 @@ const AddClient = ({ isOpen, onClose, mode = "create", client }) => {
   );
 };
 
-export default AddClient;
+export default Client;

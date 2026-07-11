@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import AddClient from "@/components/modals/AddClient";
+import Client from "@/components/modals/Client";
 import RecordPayment from "@/components/modals/RecordPayment";
 import Invoice from "@/components/modals/Invoice";
 import Wellcome from "@/components/states/Welcome";
@@ -539,12 +539,12 @@ export default function Home() {
           </div>
         </div>
         {/* --- Chart and Quick Link --- */}
-        <div className="min-[1324px]:flex w-full gap-6 mt-8 grid ">
+        <div className="min-[1540px]:flex w-full gap-6 mt-8 grid ">
           {/* Chart */}
           {/* --- Chart and Quick Link --- */}
-          <div className="min-[1324px]:flex w-full gap-6 mt-8 grid ">
+          <div className="min-[1540px]:flex w-full gap-6 grid ">
             {/* Chart */}
-            <div className="p-6 rounded-[2.5rem] border border-gray-200/50 shadow-lg w-full h-100 relative flex-1 bg-white">
+            <div className="p-6 rounded-[2.5rem] border border-gray-200/50 shadow-lg w-full h-full min-h-100 relative flex-1 bg-slate-50">
               <div className="flex items-center justify-between">
                 <h3 className="text-black text-2xl font-bold mb-2 cursor-default max-[408px]:text-xl max-[408px]:w-21">
                   Income overview
@@ -756,11 +756,11 @@ export default function Home() {
             </div>
           </div>
           {/* quick links */}
-          <div className="p-6 rounded-[2.5rem] border border-gray-200/50 shadow-lg flex flex-col min-[1324px]:w-[22%]">
+          <div className="p-6 rounded-[2.5rem] border border-gray-200/50 shadow-lg flex flex-col min-[1540px]:w-[22%]">
             <h3 className="text-black text-2xl font-bold mb-2 cursor-default">
               Quick links
             </h3>
-            <div className="grid min-[480px]:grid-cols-2 min-[856px]:grid-cols-4 min-[1324px]:grid-cols-1 flex-1 py-4 gap-2">
+            <div className="grid min-[480px]:grid-cols-2 min-[856px]:grid-cols-4 min-[1540px]:grid-cols-1 flex-1 py-4 gap-2">
               <button
                 onClick={() => setIsOpenAdd(true)}
                 className="sidebar-nav-button flex-1 hover:bg-gray-200"
@@ -770,7 +770,7 @@ export default function Home() {
               </button>
               <button
                 onClick={() => setIsOpenInv(true)}
-                className="sidebar-nav-button flex-1 flex justify-start min-[1324px]:justify-start min-[1324px]:flex-row-reverse hover:bg-gray-200 pr-1"
+                className="sidebar-nav-button flex-1 flex justify-start min-[1540px]:justify-start min-[1540px]:flex-row-reverse hover:bg-gray-200 pr-1"
               >
                 <img src="/add invoice.png" alt="add invoice logo" />
                 <span className="font-[550] text-[16px]">New Invoice</span>
@@ -784,7 +784,7 @@ export default function Home() {
               </button>
               <button
                 onClick={() => setCurrency(currency === "USD" ? "BDT" : "USD")}
-                className="sidebar-nav-button flex-1 flex justify-start min-[1324px]:justify-start min-[1324px]:flex-row-reverse items-center hover:bg-gray-200 pr-2 gap-2"
+                className="sidebar-nav-button flex-1 flex justify-start min-[1540px]:justify-start min-[1540px]:flex-row-reverse items-center hover:bg-gray-200 pr-2 gap-2"
               >
                 <img
                   className="pt-1.5"
@@ -1147,8 +1147,8 @@ export default function Home() {
             </div>
           </div>
         </section>
-        {/* Addclient pop up */}
-        <AddClient isOpen={isOpenAdd} onClose={() => setIsOpenAdd(false)} />
+        {/* client pop up */}
+        <Client isOpen={isOpenAdd} onClose={() => setIsOpenAdd(false)} />
         {/*  Record payment pop up */}
         <RecordPayment isOpen={IsOpenPay} onClose={() => setIsOpenPay(false)} />
         {/*  New invoice pop up */}

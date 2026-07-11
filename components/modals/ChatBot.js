@@ -93,13 +93,13 @@ export default function ChatBot() {
         {!isOpen && (
           <button
             onClick={() => setIsOpen(true)}
-            className="bg-[#bae1fd5c] backdrop-blur-md border border-slate-500 p-2 pl-2.5 pb-3.5 rounded-full shadow-2xl transition-all flex items-center justify-center scale-100 hover:scale-105 min-[782px]:mb-3 min-[782px]:mr-3 "
+            className="liquid-glass p-2 pl-2.5 pb-3.5 rounded-full shadow-2xl transition-all flex items-center justify-center scale-100 hover:scale-105 min-[782px]:mb-3 min-[782px]:mr-3 "
           >
             <img
               src="/MedAI.png"
               alt="MedAI Logo"
-              width="35"
-              height="35"
+              width="32"
+              height="32"
             />
           </button>
         )}

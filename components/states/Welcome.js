@@ -16,8 +16,7 @@ export default function Wellcome() {
         </h1>
 
         <p className="text-gray-500 max-w-lg leading-relaxed mb-8 cursor-default">
-          Manage clients, create professional invoices, and track payments — all
-          in one place.
+         Stop chasing payments with spreadsheets. Manage clients, send professional invoices, and track every payment with the help of AI — built for freelancers who value their time.
         </p>
 
         <div className="flex gap-3 mb-12 ">
@@ -36,7 +35,7 @@ export default function Wellcome() {
         </div>
 
         {/* Feature Cards */}
-        <div className="grid grid-cols-4 max-[580px]:grid-cols-2 gap-4 max-w-3xl w-full">
+        <div className="grid grid-cols-4 max-[650px]:grid-cols-2 gap-4 max-w-4xl w-full">
           <div className="bg-white border border-gray-100 rounded-xl p-4 text-left cursor-default">
             <div className="text-2xl mb-2">
               <img src="/inv.png" alt="invoice icon" />
@@ -45,7 +44,7 @@ export default function Wellcome() {
               Professional Invoice
             </div>
             <div className="text-sm text-gray-500 leading-relaxed mt-2">
-              Export as PDF and send to your clients instantly.
+             Create and export professional PDF invoices in seconds.
             </div>
           </div>
           <div className="bg-white border border-gray-100 rounded-xl p-4 text-left cursor-default">
@@ -56,7 +55,7 @@ export default function Wellcome() {
               Payment Tracking
             </div>
             <div className="text-sm text-gray-500 leading-relaxed mt-2">
-              See who paid, how much, and what's still due.
+             Track every payment — full, partial, or overdue.
             </div>
           </div>
           <div className="bg-white border border-gray-100 rounded-xl p-4 text-left cursor-default">
@@ -65,7 +64,7 @@ export default function Wellcome() {
             </div>
             <div className="font-semibold text-gray-950 mt-3">Dashboard</div>
             <div className="text-sm text-gray-500 leading-relaxed mt-2">
-              Monthly income, top clients — all at a glance.
+             Visualize your income, top clients, and growth at a glance.
             </div>
           </div>
           <div className="bg-white border border-gray-100 rounded-xl p-4 text-left cursor-default">
@@ -74,7 +73,7 @@ export default function Wellcome() {
             </div>
             <div className="font-semibold text-gray-950 mt-2">AI-Powered Insights</div>
             <div className="text-sm text-gray-500 leading-relaxed mt-2">
-              Ask MedAI about your due balances, clients, or records anytime.
+              Ask MedAI anything — your payments, clients, or due balances.
             </div>
           </div>
         </div>

@@ -1,8 +1,10 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useUploadThing } from "@/utils/uploadthing";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas-pro";
 
 export default function Invoice({ isOpen, onClose, mode = "create", invoice }) {
   const { startUpload, isUploading } = useUploadThing("imageUploader");
@@ -476,6 +478,32 @@ export default function Invoice({ isOpen, onClose, mode = "create", invoice }) {
     setSignature(null);
   };
 
+  // ---------------------------- State to download pdf ----------------------------
+  const invoiceRef = useRef(null);
+
+  const handleDownloadPdf = async () => {
+    const element = invoiceRef.current;
+
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+    });
+
+    const data = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
+
+    const imgWidth = 210;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    pdf.addImage(data, "PNG", 0, 0, imgWidth, imgHeight);
+    pdf.save("invoice.pdf");
+  };
+
   // --------------------------- Handle Close with reset logic ---------------------------
   const handleClose = () => {
     if (mode === "show" || mode === "edit") {
@@ -487,9 +515,7 @@ export default function Invoice({ isOpen, onClose, mode = "create", invoice }) {
   // --------------------------------- State for Preview Toggle ---------------------------------
   const [isPreviewMode, setIsPreviewMode] = useState(false);
 
-  // ---------------------------- State to return if isOpen is false ----------------------------
   if (!isOpen) return null;
-
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
       <div className="min-[1000px]:w-[90vw] min-[1000px]:h-[90vh] w-[98vw] h-[98vh] max-w-427.5 max-h-305 flex flex-col">
@@ -530,10 +556,11 @@ export default function Invoice({ isOpen, onClose, mode = "create", invoice }) {
               Preview
             </button>
 
-            <div className="h-6 w-px bg-slate-400/80 hidden sm:block"></div>
-
-            <button className="px-8 py-3 max-[660px]:p-3 max-[485px]:flex-1 text-base font-bold text-slate-700 bg-slate-200 rounded-xl hover:bg-slate-300 hover:text-slate-900 active:scale-95 transition-all flex justify-center items-center gap-1.5 cursor-pointer">
-              Print / Download
+            <button
+              onClick={handleDownloadPdf}
+              className={`px-8 py-3 max-[660px]:p-3 max-[485px]:flex-1 text-base font-bold text-slate-700 bg-slate-200 rounded-xl hover:bg-slate-300 hover:text-slate-900 active:scale-95 transition-all flex justify-center items-center gap-1.5 cursor-pointer ${mode !== "create" ? "" : "hidden"}`}
+            >
+              PDF
             </button>
           </div>
         </div>
@@ -1249,7 +1276,14 @@ export default function Invoice({ isOpen, onClose, mode = "create", invoice }) {
                 : `${isPreviewMode ? "" : "max-[1000px]:hidden"}`
             }`}
           >
-            <div className="bg-white border border-slate-100 text-slate-900 rounded-3xl p-8 shadow-2xl flex flex-col w-full h-full min-h-fit max-[490px]:p-3">
+            <div
+              ref={invoiceRef}
+              style={{
+                backgroundColor: "#ffffff",
+                color: "#000000",
+              }}
+              className="bg-white border border-slate-100 text-slate-900 rounded-3xl p-8 shadow-2xl flex flex-col w-full h-full min-h-fit max-[490px]:p-3"
+            >
               <div className="flex items-start justify-between mb-6">
                 <div>
                   <h1 className="text-4xl font-black tracking-tight text-slate-900">
