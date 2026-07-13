@@ -258,7 +258,7 @@ export default function Invoice({ isOpen, onClose, mode = "create", invoice }) {
 
     let currentSignature = await uploadFileIfNeeded(
       Signature,
-      "Uploading to the signature cloud... ",
+      "Uploading signature to the cloud... ",
       "Signature upload failed! But trying to save the invoice.",
     );
     setSignature(currentSignature);
