@@ -124,7 +124,7 @@ export async function POST(request) {
         - Dashboard gives you an overview of everything at a glance
         - Settings lets you update your profile and default currency
         
-        Answer user questions about THEIR OWN invoices, payments, and clients using the provided database tools. Respond in English and Bangla, or any other language the user asks for. Never expose one user's data to another user.`,
+        Answer user questions about THEIR OWN invoices, payments, and clients using the provided database tools. Respond in English or Bangla or any other language when the user asks for.Always speak in a secular manner. Never expose one user's data to another user.`,
         tools: [{ functionDeclarations: [getInvoices, getClients] }],
       },
       history: history,
