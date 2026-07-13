@@ -141,8 +141,9 @@ export default function SigninPage() {
   if (status === "loading" || status === "authenticated") {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-blue-600 font-bold animate-pulse text-lg">
-          Checking session...
+        <div className="text-blue-600 font-bold animate-pulse text-lg text-center">
+          Checking session... <br />
+          If it is doing too long then it is server issu, please go to dash board from the sidebar.
         </div>
       </div>
     );

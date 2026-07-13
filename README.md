@@ -104,7 +104,7 @@ medtracker/
 │   │   ├── AddClient.js
 │   │   ├── ChatBot.js
 │   │   ├── Invoice.js
-│   │   └── RecordPayment.js
+│   │   └── Payment.js
 │   ├── providers/
 │   │   └── SessionWrapper.js
 │   └── states/

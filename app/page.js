@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect, Suspense } from "react"; // Suspense যুক্ত করা হয়েছে
 import { toast, ToastContainer } from "react-toastify";
 import Client from "@/components/modals/Client";
-import RecordPayment from "@/components/modals/RecordPayment";
+import Payment from "@/components/modals/Payment";
 import Invoice from "@/components/modals/Invoice";
 import Wellcome from "@/components/states/Welcome";
 import { useSession } from "next-auth/react";
@@ -1169,7 +1169,7 @@ function HomeContent() {
         {/* client pop up */}
         <Client isOpen={isOpenAdd} onClose={() => setIsOpenAdd(false)} />
         {/*  Record payment pop up */}
-        <RecordPayment isOpen={IsOpenPay} onClose={() => setIsOpenPay(false)} />
+        <Payment isOpen={IsOpenPay} onClose={() => setIsOpenPay(false)} />
         {/*  New invoice pop up */}
         <Invoice isOpen={IsOpenInv} onClose={() => setIsOpenInv(false)} />
       </div>

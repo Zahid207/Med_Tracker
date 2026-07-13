@@ -2,143 +2,114 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useSession } from "next-auth/react";
 
-const RecordPayment = ({ isOpen, onClose }) => {
+const Payment = ({ isOpen, onClose, mode = "create", payId }) => {
   if (!isOpen) return null;
 
-  // --------------------------- states for all those inputs value ------------------------------
-  const [IsOpen, setIsOpen] = useState(false); // to open the invoice list
+  const [IsOpen, setIsOpen] = useState(false);
   const [selectedInv, setSelectedInv] = useState(null);
-  const [pmntAmunt, setpmntAmunt] = useState(""); // for payment ammount
+  const [pmntAmount, setpmntAmount] = useState("");
   const [pmntDate, setpmntDate] = useState(
     new Date().toISOString().split("T")[0],
-  ); // for payment date
-  const [pmntMthd, setpmntMthd] = useState(""); // for payment method
+  );
+  const [pmntMthd, setpmntMthd] = useState("");
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
+  const [invoices, setinvoices] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // ---------------------------- function to add client in database ----------------------------
+  const fetchInvoices = () => {
+    if (!userId) return;
+    setIsLoading(true);
+    fetch(`/api/invoice?userId=${userId}`)
+      .then((res) => {
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        setinvoices(data);
+
+        if (mode === "edit" && payId) {
+          const found = data.find((inv) => inv._id === payId);
+          if (found) {
+            setSelectedInv(found);
+            setpmntAmount(found.invoice_paymented_ammount || "");
+            setpmntDate(
+              found.invoice_payment_date?.split("T")[0] ||
+                new Date().toISOString().split("T")[0],
+            );
+            setpmntMthd(found.invoice_payment_methode || "");
+          }
+        }
+      })
+      .catch((err) => console.error("Error:", err.message))
+      .finally(() => setIsLoading(false));
+  };
+
+  useEffect(() => {
+    fetchInvoices();
+  }, [userId, payId, mode]);
+
+  // -------------------- create / edit submit --------------------
   const recordNewPayment = async () => {
     if (!selectedInv) {
-      toast.error("Please select an invoice first! ");
-
+      toast.error("Please select an invoice first!");
       return;
     }
     onClose();
 
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-
     const raw = JSON.stringify({
       invoiceId: selectedInv?._id,
-      invoice_paymented_ammount: pmntAmunt,
+      invoice_paymented_ammount: pmntAmount,
       invoice_payment_date: pmntDate,
       invoice_payment_methode: pmntMthd,
+      status: "paid",
     });
 
-    const requestOptions = {
+    const savePaymentPromise = fetch("/api/invoice", {
       method: "PUT",
-      headers: myHeaders,
+      headers: { "Content-Type": "application/json" },
       body: raw,
-      redirect: "follow",
-    };
-
-    const savePaymentPromise = new Promise(async (resolve, reject) => {
-      try {
-        const r = await fetch("/api/invoice", requestOptions);
-
-        if (!r.ok) {
-          const errorText = await r.text();
-          reject(
-            new Error(
-              `Server Error: ${r.status}. ${errorText.substring(0, 50)}`,
-            ),
-          );
-          return;
-        }
-
-        const result = await r.json();
-
-        if (result.success) {
-          resolve(result);
-          fetchClients();
-        } else {
-          reject(new Error(result.message || "Failed to update payment"));
-        }
-      } catch (error) {
-        reject(error);
-      }
+    }).then(async (r) => {
+      if (!r.ok) throw new Error(`Server Error: ${r.status}`);
+      const result = await r.json();
+      if (!result.success) throw new Error(result.message || "Failed");
+      fetchInvoices();
+      return result;
     });
 
     toast.promise(savePaymentPromise, {
-      pending: "Updating record information...",
-      success: "Record updated successfully ",
+      pending: mode === "edit" ? "Updating payment..." : "Recording payment...",
+      success:
+        mode === "edit"
+          ? "Payment updated successfully"
+          : "Payment recorded successfully",
       error: {
         render({ data }) {
-          return data?.message || "Failed to update record !";
+          return data?.message || "Failed!";
         },
       },
     });
   };
 
-  // ----------------------- collecting all clietns data from the database -----------------------
-  const { data: session } = useSession();
-  const userId = session?.user?.id;
-  const [invoices, setinvoices] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const fetchClients = () => {
-    if (!userId) return;
-    setIsLoading(true);
-    fetch(`/api/invoice?userId=${userId}`)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`Server error: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((data) => {
-        setinvoices(data);
-      })
-      .catch((err) => {
-        console.error("The actual error is:", err.message);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
-  // Fetch once on mount
-  useEffect(() => {
-    fetchClients();
-  }, [userId]);
-
-  // --------------------------------- filtered unpaid invoices ---------------------------------
+  // -------------------- filtered unpaid invoices ----------------
   const processedInvoices = invoices
-    .filter((item) => {
-      const itemStatus = (item.status || "").toLowerCase().trim();
+    .filter((item) => (item.status || "").toLowerCase().trim() === "unpaid")
+    .map((item) => ({
+      ...item,
+      totalAmount: (item.invoice_items || []).reduce((sum, cur) => {
+        return sum + (Number(cur.units) || 0) * (Number(cur.price) || 0);
+      }, 0),
+    }));
 
-      return itemStatus === "unpaid";
-    })
-    .map((item) => {
-      const totalAmount =
-        (item.invoice_items || []).reduce((sum, current) => {
-          const units = Number(current.units) || 0;
-          const price = Number(current.price) || 0;
-          return sum + units * price;
-        }, 0) || 0;
-
-      return {
-        ...item,
-        totalAmount,
-      };
-    });
-
-  // ------------------------------------- Number formatter -------------------------------------
   const compactFormatter = new Intl.NumberFormat("en-US", {
     notation: "compact",
     compactDisplay: "short",
     maximumFractionDigits: 2,
   });
-
   {
-    /*  Record payment pop up */
+    /* payment pop up */
   }
+
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
       {/* main pop up container */}
@@ -265,8 +236,9 @@ const RecordPayment = ({ isOpen, onClose }) => {
               <input
                 type="number"
                 required
-                value={pmntAmunt}
-                onChange={(e) => setpmntAmunt(e.target.value)}
+                min="0"
+                value={pmntAmount}
+                onChange={(e) => setpmntAmount(e.target.value)}
                 placeholder="0.00"
                 className="w-full bg-gray-50 border border-gray-200/80 rounded-xl px-4 py-3 outline-none focus:border-gray-400 font-semibold text-base transition-all"
               />
@@ -340,4 +312,4 @@ const RecordPayment = ({ isOpen, onClose }) => {
   );
 };
 
-export default RecordPayment;
+export default Payment;

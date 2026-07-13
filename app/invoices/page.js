@@ -274,12 +274,12 @@ const invoice = () => {
       text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#ef4444", 
-      cancelButtonColor: "#64748b", 
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#64748b",
       confirmButtonText: "Yes, delete it!",
       background: "#ffffff",
       customClass: {
-        popup: "rounded-2xl", 
+        popup: "rounded-2xl",
       },
     });
 
@@ -304,6 +304,9 @@ const invoice = () => {
       } catch (error) {
         toast.error("Something went wrong while deleting!");
       }
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     }
   };
 

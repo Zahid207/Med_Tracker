@@ -93,6 +93,7 @@ export async function PUT(request) {
         invoice_paymented_ammount,
         invoice_payment_date,
         invoice_payment_methode,
+        status,
       } = body;
 
       if (!invoiceId) {
@@ -109,7 +110,7 @@ export async function PUT(request) {
             invoice_paymented_ammount: Number(invoice_paymented_ammount) || 0,
             invoice_payment_date: invoice_payment_date,
             invoice_payment_methode: invoice_payment_methode,
-            status: "paid",
+            status: status,
           },
         },
       );
@@ -152,7 +153,7 @@ export async function DELETE(request) {
     if (!invoiceId) {
       return NextResponse.json(
         { success: false, message: "Invoice ID is missing" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -165,7 +166,7 @@ export async function DELETE(request) {
     if (result.deletedCount === 0) {
       return NextResponse.json(
         { success: false, message: "No invoice found with this ID" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -176,7 +177,7 @@ export async function DELETE(request) {
   } catch (error) {
     return NextResponse.json(
       { success: false, message: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

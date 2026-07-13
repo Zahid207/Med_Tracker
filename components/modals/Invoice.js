@@ -9,6 +9,8 @@ import html2canvas from "html2canvas-pro";
 export default function Invoice({ isOpen, onClose, mode = "create", invoice }) {
   const { startUpload, isUploading } = useUploadThing("imageUploader");
 
+  const isResettingRef = useRef(false);
+
   // ------------------------- function to add/update invoice in database ---------------------------
   const saveInvoiceToDB = async (
     CloudLogo,
@@ -93,8 +95,12 @@ export default function Invoice({ isOpen, onClose, mode = "create", invoice }) {
 
         if (result.success) {
           resolve(result);
+
+          isResettingRef.current = true;
+
           handleResetAll();
           fetchDatas();
+          onClose();
         } else {
           reject(result);
         }
@@ -397,6 +403,8 @@ export default function Invoice({ isOpen, onClose, mode = "create", invoice }) {
 
   // ----------------------- Effect to populate data in 'edit' or 'show' mode -----------------------
   useEffect(() => {
+    if (!isOpen) return;
+
     if ((mode === "edit" || mode === "show") && currentInvoice) {
       setYrNm(currentInvoice.user_name || "");
       setYrEml(currentInvoice.user_email || "");
@@ -443,13 +451,20 @@ export default function Invoice({ isOpen, onClose, mode = "create", invoice }) {
       setnote(currentInvoice.user_note || "");
       setSignature(currentInvoice.user_signature || null);
     }
-  }, [mode, currentInvoice]);
+  }, [mode, currentInvoice, isOpen]);
+
+  useEffect(() => {
+    if (isOpen) {
+      isResettingRef.current = false;
+    }
+  }, [isOpen, mode, invoice]);
 
   // --------------------------------- reset all of them --------------------------------------
   const handleResetAll = () => {
     setActiveSection("myDetails");
     setClientMode("dropdown");
     setPaymentMethod("bkash");
+    setSelectedClientId("none");
     setYrNm("");
     setYrEml("");
     setYrAdrs("");

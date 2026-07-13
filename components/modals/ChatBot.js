@@ -159,6 +159,9 @@ export default function ChatBot() {
                 </div>
               )}
             </div>
+            <div className="flex justify-center text-sm text-slate-500 bg-slate-50">
+              MedAI is AI and can make mistakes.
+            </div>
 
             {/* Input form */}
             <form

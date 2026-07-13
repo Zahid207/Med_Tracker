@@ -1,9 +1,10 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
-import RecordPayment from "@/components/modals/RecordPayment";
+import Payment from "@/components/modals/Payment";
 import SigninFirst from "@/components/states/SigninFirst";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { useSession } from "next-auth/react";
+import Swal from "sweetalert2";
 
 export default function payments() {
   // ------------------------ State for fulter button and search bar toggle -------------------------
@@ -13,9 +14,6 @@ export default function payments() {
   const triggerSearch = () => {
     setSearchQuery(typingQuery);
   };
-
-  // ------------------------------- For record payment button pop up -------------------------------
-  const [IsOpenPay, setIsOpenPay] = useState(false);
 
   // -------------------------- State to control which row's popup is open --------------------------
   const [openPopupIndex, setOpenPopupIndex] = useState(null);
@@ -127,6 +125,80 @@ export default function payments() {
     maximumFractionDigits: 2,
   });
 
+  // ----------------------------------- For Payment pop up -----------------------------------
+  // for open/close
+  const [IsOpenPay, setIsOpenPay] = useState(false);
+
+  // for Payment mode
+  const [payMode, setPayMode] = useState("create");
+
+  // for Payment id
+  const [selectedPay, setSelectedPay] = useState(null);
+
+  // to record a new payment
+  const handleRecordPay = () => {
+    setPayMode("create");
+    setSelectedPay(null);
+    setIsOpenPay(true);
+  };
+
+  // to delete the payment
+  const handleEditPay = (invoiceId) => {
+    setPayMode("edit");
+    setSelectedPay(invoiceId);
+    setIsOpenPay(true);
+  };
+
+  // to close the pop up
+  const handleClosePay = () => {
+    setIsOpenPay(false);
+  };
+
+  // to delete the payment
+  const handleDeletePay = async (payId) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#64748b",
+      confirmButtonText: "Yes, delete it!",
+      background: "#ffffff",
+      customClass: { popup: "rounded-2xl" },
+    });
+
+    if (!result.isConfirmed) return;
+
+    toast.promise(
+      fetch("/api/invoice", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          invoiceId: payId,
+          invoice_paymented_ammount: "",
+          invoice_payment_date: "",
+          invoice_payment_methode: "",
+          status: "unpaid",
+        }),
+      }).then(async (r) => {
+        const result = await r.json();
+        if (!result.success) throw new Error(result.message || "Failed");
+        setTimeout(() => window.location.reload(), 1000);
+        return result;
+      }),
+      {
+        pending: "Deleting payment...",
+        success: "Payment deleted successfully",
+        error: {
+          render({ data }) {
+            return data?.message || "Failed!";
+          },
+        },
+      },
+    );
+  };
+
   if (status === "loading") {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-white">
@@ -163,7 +235,7 @@ export default function payments() {
 
           {/* + Record Payment Button */}
           <button
-            onClick={() => setIsOpenPay(true)}
+            onClick={() => handleRecordPay()}
             className="bg-blue-500 text-white hover:bg-blue-600 shadow-md active:scale-95 max-[782px]:scale-90 max-[782px]:active:scale-85 px-5 py-2.5 rounded-xl font-bold transition-all flex items-center gap-2 cursor-pointer"
           >
             <span>
@@ -387,19 +459,20 @@ export default function payments() {
                             {/* Actions Cell */}
                             <td className="p-4 text-center text-gray-400 font-bold hover:text-gray-900 text-xl w-[5%] relative">
                               <button
-                                onClick={() => togglePopup(index)}
+                                onClick={() => togglePopup(item._id)}
                                 className="block w-full h-full select-none cursor-pointer"
                                 ref={openPopupIndex === index ? popupRef : null}
                               >
                                 ⋮
                               </button>
 
-                              {openPopupIndex === index && (
+                              {openPopupIndex === item._id && (
                                 <div className="absolute right-4 mt-1 w-28 bg-white border border-slate-200/80 rounded-xl px-2 p-1 shadow-lg shadow-slate-200/50 z-50 flex flex-col gap-0.5 animate-fade-in text-left">
                                   <button
                                     type="button"
                                     onClick={() => {
                                       setOpenPopupIndex(null);
+                                      handleEditPay(item._id);
                                     }}
                                     className="w-full text-left px-2.5 py-1.5 rounded-lg text-base font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors cursor-pointer flex items-center gap-1.5"
                                   >
@@ -410,6 +483,7 @@ export default function payments() {
                                     type="button"
                                     onClick={() => {
                                       setOpenPopupIndex(null);
+                                      handleDeletePay(item._id);
                                     }}
                                     className="w-full text-left px-2.5 py-1.5 rounded-lg text-base font-bold text-red-500 hover:bg-red-50 transition-colors cursor-pointer flex items-center gap-1.5"
                                   >
@@ -599,7 +673,12 @@ export default function payments() {
           </div>
         </div>
         {/*  Record payment pop up */}
-        <RecordPayment isOpen={IsOpenPay} onClose={() => setIsOpenPay(false)} />
+        <Payment
+          isOpen={IsOpenPay}
+          onClose={handleClosePay}
+          mode={payMode}
+          payId={selectedPay}
+        />
       </div>
     );
   }
