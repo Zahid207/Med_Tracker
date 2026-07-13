@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, Suspense } from "react"; // Suspense যুক্ত করা হয়েছে
 import { toast, ToastContainer } from "react-toastify";
 import Client from "@/components/modals/Client";
 import RecordPayment from "@/components/modals/RecordPayment";
@@ -17,7 +17,26 @@ import {
   Area,
 } from "recharts";
 
+// --- man component ---
 export default function Home() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex flex-col items-center justify-center bg-white">
+          <div className="animate-spin rounded-full h-10 w-10 border-4 border-gray-200 border-t-blue-600"></div>
+          <p className="text-gray-500 text-sm font-medium animate-pulse">
+            Please wait while loading your data...
+          </p>
+        </div>
+      }
+    >
+      <HomeContent />
+    </Suspense>
+  );
+}
+
+// --- `The main component` that renders the content of the page ---
+function HomeContent() {
   // ----------------------------------- For add client pop up -----------------------------------
   const [isOpenAdd, setIsOpenAdd] = useState(false);
 

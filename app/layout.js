@@ -3,6 +3,7 @@ import "./globals.css";
 import Sidebar from "@/components/layout/Sidebar";
 import SessionWraper from "@/components/providers/SessionWraper";
 import ChatBot from "@/components/modals/ChatBot";
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +33,10 @@ export default function RootLayout({ children }) {
       <body>
         <SessionWraper>
           <Sidebar>
-            {children} <ChatBot />
+            {children}{" "}
+            <Suspense fallback={<div>Loading features...</div>}>
+              <ChatBot />
+            </Suspense>
           </Sidebar>
         </SessionWraper>
       </body>
