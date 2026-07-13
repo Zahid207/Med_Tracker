@@ -184,6 +184,9 @@ export default function payments() {
       }).then(async (r) => {
         const result = await r.json();
         if (!result.success) throw new Error(result.message || "Failed");
+        setItems((prevItems) =>
+            prevItems.filter((inv) => inv._id !== payId),
+          );
         setTimeout(() => window.location.reload(), 1000);
         return result;
       }),
