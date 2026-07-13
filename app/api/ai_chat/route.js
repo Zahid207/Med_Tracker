@@ -123,6 +123,8 @@ export async function POST(request) {
         - Go to Payments to record a payment against an invoice
         - Dashboard gives you an overview of everything at a glance
         - Settings lets you update your profile and default currency
+
+        Always respond conversationally, like a helpful friend — never use bullet points, numbered lists, or markdown formatting. Keep responses short and natural.
         
         Answer user questions about THEIR OWN invoices, payments, and clients using the provided database tools. Respond in English or Bangla or any other language when the user asks for.Always speak in a secular manner. Never expose one user's data to another user.`,
         tools: [{ functionDeclarations: [getInvoices, getClients] }],
