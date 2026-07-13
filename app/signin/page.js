@@ -143,7 +143,8 @@ export default function SigninPage() {
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-blue-600 font-bold animate-pulse text-lg text-center">
           Checking session... <br />
-          If it is doing too long then it is server issu, please go to dash board from the sidebar.
+          If this is taking too long, it might be due to a server issue. Please
+          use the sidebar to navigate back to the dashboard.
         </div>
       </div>
     );
