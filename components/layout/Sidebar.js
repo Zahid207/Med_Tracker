@@ -162,13 +162,13 @@ export default function Sidebar({ children }) {
                       session.user?.user_photo &&
                       session.user.user_photo.startsWith("http")
                         ? session.user.user_photo
-                        : "/anonymous-client.png"
+                        : "https://72wzxt7y37.ufs.sh/f/7Mkh7XDZef1NHX9hyp5tXJNIQTVn56zrmbWxB7KaUAoOd0su"
                     }
                     alt={session.user?.user_name || "User"}
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       e.target.onerror = null;
-                      e.target.src = "/anonymous-client.png";
+                      e.target.src = "https://72wzxt7y37.ufs.sh/f/7Mkh7XDZef1NHX9hyp5tXJNIQTVn56zrmbWxB7KaUAoOd0su";
                     }}
                   />
                 </div>
